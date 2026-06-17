@@ -1,95 +1,119 @@
 # Tasks: Concert Ticket Calculator
 
-## Specification Phase
+Generated from:
 
-- [x] Define system goal
-- [x] Define functional requirements
-- [x] Define acceptance criteria
-- [x] Define API contract
+- `specs/ticket-calculator/spec.md`
+- `specs/ticket-calculator/plan.md`
+- `openapi.yaml`
 
-Artifacts:
-- spec.md
-- openapi.yaml
+## Documentation Tasks
 
----
-
-## Design Phase
-
-- [x] Select technology stack
-- [x] Define project architecture
-- [x] Define implementation strategy
-
-Artifacts:
-- plan.md
-
----
-
-## Implementation Phase
-
-### Business Logic
-
-- [x] Create ticket calculator
-- [x] Define ticket types
-- [x] Define ticket prices
-- [x] Validate artist
-- [x] Validate ticket type
-- [x] Validate quantity
+- [x] Define the Concert Ticket Calculator feature specification.
+- [x] Document the accepted ticket types and unit prices.
+- [x] Document validation rules for artist, ticket type, and quantity.
+- [x] Document successful calculation response fields.
+- [x] Document `GET /health` and `POST /tickets/calculate` in `openapi.yaml`.
+- [x] Create the implementation plan for the existing feature.
 
 Files:
-- src/ticketCalculator.ts
 
-### API
+- `specs/ticket-calculator/spec.md`
+- `specs/ticket-calculator/plan.md`
+- `openapi.yaml`
 
-- [x] Create health endpoint
-- [x] Create ticket calculation endpoint
+## Business Logic Tasks
+
+- [x] Create isolated ticket calculation logic.
+- [x] Define supported ticket types: `GENERAL`, `CAMPO`, and `VIP`.
+- [x] Define unit prices: `50000`, `80000`, and `120000`.
+- [x] Validate that artist is required.
+- [x] Validate that quantity is greater than zero.
+- [x] Validate that ticket type is one of the supported values.
+- [x] Calculate `total = unitPrice * quantity`.
+- [x] Return `artist`, `ticketType`, `quantity`, `unitPrice`, and `total` for valid input.
 
 Files:
-- src/app.ts
-- src/server.ts
 
-### Frontend
+- `src/ticketCalculator.ts`
 
-- [x] Create HTML interface
-- [x] Create CSS styles
-- [x] Connect frontend with API
+## Backend API Tasks
+
+- [x] Create the Express application.
+- [x] Configure JSON request parsing.
+- [x] Serve the static frontend from `public/`.
+- [x] Implement `GET /health`.
+- [x] Implement `POST /tickets/calculate`.
+- [x] Delegate ticket calculation rules to the business logic module.
+- [x] Return controlled errors for invalid quantity.
+- [x] Return controlled errors for invalid ticket type.
+- [x] Return controlled errors for missing artist.
+- [x] Create the server entry point.
 
 Files:
-- public/index.html
-- public/styles.css
-- public/script.js
 
----
+- `src/app.ts`
+- `src/server.ts`
 
-## Verification Phase
+## Frontend Tasks
+
+- [x] Create the browser-accessible HTML page.
+- [x] Add an artist input.
+- [x] Add a ticket type selector for `GENERAL`, `CAMPO`, and `VIP`.
+- [x] Add a quantity input.
+- [x] Add a submit action for calculating tickets.
+- [x] Call `POST /tickets/calculate` from the frontend.
+- [x] Display successful calculation results.
+- [x] Display controlled API validation errors.
+- [x] Add frontend styling.
+
+Files:
+
+- `public/index.html`
+- `public/styles.css`
+- `public/script.js`
+
+## Testing Tasks
 
 ### Unit Tests
 
-- [x] Verify correct ticket calculation
-- [x] Verify invalid quantity validation
+- [x] Test successful ticket calculation.
+- [x] Test unit price selection by ticket type.
+- [x] Test total calculation.
+- [x] Test invalid quantity validation.
+- [x] Test invalid ticket type validation.
+- [x] Test missing artist validation.
 
 ### Integration Tests
 
-- [x] Verify POST /tickets/calculate
-- [x] Verify invalid ticket type response
+- [x] Test `GET /health`.
+- [x] Test successful `POST /tickets/calculate`.
+- [x] Test invalid quantity response.
+- [x] Test invalid ticket type response.
+- [x] Test missing artist response.
 
 Files:
-- tests/app.test.ts
 
----
+- `tests/app.test.ts`
 
-## Continuous Integration Phase
+## Continuous Integration Tasks
 
-- [x] Configure GitHub Actions
-- [x] Run tests automatically
-- [x] Run TypeScript build automatically
+- [x] Configure GitHub Actions workflow.
+- [x] Install project dependencies in CI.
+- [x] Run automated tests in CI.
+- [x] Run TypeScript build in CI.
 
 Files:
-- .github/workflows/ci.yml
 
----
+- `.github/workflows/ci.yml`
+- `package.json`
 
-## Future Improvements
+## Verification Tasks
 
-- [ ] Deploy to Vercel
-- [ ] Add E2E tests
-- [ ] Add email notifications
+- [ ] Run `npm test` locally after task regeneration.
+- [ ] Run `npm run build` locally after task regeneration.
+- [ ] Optionally verify the frontend in a browser against the running API.
+
+## Future Improvement Tasks
+
+- [ ] Add end-to-end browser tests for the frontend flow.
+- [ ] Add deployment workflow or hosting configuration.
