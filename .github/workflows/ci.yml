@@ -101,7 +101,7 @@ jobs:
 
   send-feedback-email:
     runs-on: ubuntu-latest
-    needs: e2e
+    needs: [validate-sdd, test, e2e, build, deploy]
     if: always()
 
     steps:
