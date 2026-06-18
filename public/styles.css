@@ -7,8 +7,8 @@ body {
   font-family: "Inter", Arial, sans-serif;
   min-height: 100vh;
   background:
-    linear-gradient(rgba(18, 27, 46, 0.45), rgba(18, 27, 46, 0.55)),
-    url("harry.jpg");
+    linear-gradient(rgba(18, 27, 46, 0.15), rgba(18, 27, 46, 0.20)),
+    url("Harry.jpg");
   background-size: cover;
   background-position: center 28%;
   display: grid;
