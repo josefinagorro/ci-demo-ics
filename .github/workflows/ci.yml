@@ -64,10 +64,26 @@ jobs:
 
       - name: Build project
         run: npm run build
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Deploy to Vercel
+        run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   send-feedback-email:
     runs-on: ubuntu-latest
-    needs: [validate-sdd, test, build]
+    needs: [validate-sdd, test, build, deploy]
     if: always()
 
     steps:
@@ -87,6 +103,7 @@ jobs:
             SDD validation: ${{ needs.validate-sdd.result }}
             Automated tests: ${{ needs.test.result }}
             Build: ${{ needs.build.result }}
+            Deploy: ${{ needs.deploy.result }}
 
             Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}
@@ -99,4 +116,5 @@ jobs:
             - If SDD validation failed, required specification artifacts are missing.
             - If automated tests failed, at least one test did not pass.
             - If build failed, the project could not be compiled/prepared correctly.
-            - If all jobs are success, the integration passed correctly.
+            - If deploy failed, the application was not published to Vercel. Review the deploy logs and Vercel configuration.
+            - If all jobs are success, the integration passed correctly and the application was deployed successfully.
