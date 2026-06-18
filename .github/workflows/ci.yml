@@ -2,14 +2,36 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main, feature/ci-pipeline]
+    branches: [main, feature/ci-pipeline, feature/spec-kit]
   pull_request:
     branches: [main]
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
 
+  validate-sdd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Spec Kit artifacts
+        run: |
+          test -f .specify/memory/constitution.md
+          test -f openapi.yaml
+
+          for dir in specs/*; do
+            if [ -d "$dir" ]; then
+              test -f "$dir/spec.md"
+              test -f "$dir/plan.md"
+              test -f "$dir/tasks.md"
+              echo "Validated SDD artifacts in $dir"
+            fi
+          done
+
+          echo "All SDD artifacts validated successfully."
+
+  test:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,5 +47,56 @@ jobs:
       - name: Run automated tests
         run: npm test
 
+  build:
+    runs-on: ubuntu-latest
+    needs: [validate-sdd, test]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build project
         run: npm run build
+
+  send-feedback-email:
+    runs-on: ubuntu-latest
+    needs: [validate-sdd, test, build]
+    if: always()
+
+    steps:
+      - name: Send CI feedback email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "[CI] ${{ github.repository }} - Pipeline finished on ${{ github.ref_name }}"
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM }}
+          body: |
+            CI Pipeline result summary:
+
+            SDD validation: ${{ needs.validate-sdd.result }}
+            Automated tests: ${{ needs.test.result }}
+            Build: ${{ needs.build.result }}
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            Workflow run:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Explanation:
+            - If SDD validation failed, required specification artifacts are missing.
+            - If automated tests failed, at least one test did not pass.
+            - If build failed, the project could not be compiled/prepared correctly.
+            - If all jobs are success, the integration passed correctly.
